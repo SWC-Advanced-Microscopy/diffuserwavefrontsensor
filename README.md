@@ -8,7 +8,11 @@ Create an instance of the `diffusersensor` class in the base workspace
 d=diffusersensor
 ```
 
-A window now appears with a live stream from the camera sensor. 
+Assuming you have the default compatible camera, a window will now appear with a live stream from the camera sensor. 
+If nothing happens, you will need to create a camera function file for your device. 
+Go to the `private` directory of the `dws.camera` class and make a new function based on the existing ones. 
+The string `camToStart` should now be assigned to the name of your camera.  
+
 Set up your optical system to acquire a reference image then: 
 ```
 d.setReference
@@ -49,3 +53,5 @@ d.calcPhase
 d.plotWavefront
 ```
 
+### Settings
+To get meaningful numbers in the phase plot you should edit the `dws_settings.m` file so that pixel size, wavelength, and distance to the diffuser are correct. 
