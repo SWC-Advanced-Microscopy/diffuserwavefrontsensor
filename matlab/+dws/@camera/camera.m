@@ -17,6 +17,13 @@ classdef camera < handle
             obj.vid = eval(camToStart);
             obj.src = getselectedsource(obj.vid);
 
+            % Set up the camera so that it is manually triggerable an 
+            % unlimited number of times. 
+            triggerconfig(obj.vid,'manual')
+            vid.TriggerRepeat=inf;
+            obj.vid.FramesPerTrigger = inf;
+            obj.vid.FramesAcquiredFcnCount=5; %Run frame acq fun every frame
+
         end % close constructor
 
 
@@ -24,13 +31,6 @@ classdef camera < handle
             delete(obj.vid)
         end % close destructor
 
-        function im=snapFrame(obj)
-            obj.vid.FramesPerTrigger = 1;
-            obj.vid.TriggerRepeat=inf;
-            start(obj.vid) %Slow so better done elsewhere
-            trigger(obj.vid)
-            im=getdata(obj.vid);
-        end
 
     end
 
@@ -45,10 +45,8 @@ end
 % Following are temporary functions to set up a known camera
 function vid=basler
     vid = videoinput('gentl', 1, 'Mono8');
-    vid.FramesPerTrigger = 1;
-
     src.AcquisitionFrameRateEnable = 'True';
-    src.AcquisitionFrameRate = 25;
+    src.AcquisitionFrameRate = 1;
 end
 
 
