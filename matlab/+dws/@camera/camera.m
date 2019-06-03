@@ -15,7 +15,7 @@ classdef camera < handle
             end
 
             obj.vid = eval(camToStart);
-            obj.src = getselectedsource(vid);
+            obj.src = getselectedsource(obj.vid);
 
         end % close constructor
 
@@ -23,6 +23,14 @@ classdef camera < handle
         function delete(obj)
             delete(obj.vid)
         end % close destructor
+
+        function im=snapFrame(obj)
+            obj.vid.FramesPerTrigger = 1;
+            obj.vid.TriggerRepeat=inf;
+            start(obj.vid) %Slow so better done elsewhere
+            trigger(obj.vid)
+            im=getdata(obj.vid);
+        end
 
     end
 
