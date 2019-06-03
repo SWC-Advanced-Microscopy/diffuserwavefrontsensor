@@ -81,10 +81,6 @@ classdef diffusersensor < handle
                 camToStart=[];
             end
 
-            % Make anonymous functions
-            obj.FFT  = @(x) fftshift(fft2(fftshift(x)));
-            obj.IFFT = @(x) ifftshift(ifft2(ifftshift(x)));
-
             % Connect to the camera
             obj.cam = dws.camera(camToStart);
 

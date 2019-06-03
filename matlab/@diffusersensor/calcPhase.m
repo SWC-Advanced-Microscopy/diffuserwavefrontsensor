@@ -22,6 +22,8 @@ function calcPhase(obj)
     lastFrame=obj.lastFrame;
     refImage =obj.refImage;
 
+
+    % TODO: if we resize we need to change the pixel size (see below too)
     if obj.resizeBy<=1 && obj.resizeBy>0.1
         lastFrame = imresize(lastFrame,obj.resizeBy);
         refImage = imresize(refImage,obj.resizeBy);
@@ -52,10 +54,8 @@ function calcPhase(obj)
     end
 
 
-    [M,N]=size(lastFrame);
 
-    obj.FFT=@(x) fftshift(fft2(fftshift(x)));
-    obj.IFFT=@(x) ifftshift(ifft2(ifftshift(x)));
+
 
     %----------  non-rigid image registration  ----------
     PL=3;
@@ -68,11 +68,15 @@ function calcPhase(obj)
         fprintf('done\n')
     end
 
+    % TODO: if we resize we need to change the pixel size
+    %obj.demons = imresize(obj.demons,0.5); %resize since the gradients are smooth anyway
     %----------   symetrization for gradient integration   ----------
     if verbose
         fprintf('Fourier integration...')
     end
 
+    M=size(obj.demons,1);
+    N=size(obj.demons,2);
     D2=zeros(2*M,2*N,2);
     D2([1:M],[1:N],:)=obj.demons;
     D2(M+[1:M],[1:N],:)=flipud(obj.demons);
@@ -81,6 +85,10 @@ function calcPhase(obj)
 
 
     %----------   Fourier integration   ----------
+    % Make anonymous functions
+    obj.FFT  = @(x) fftshift(fft2(fftshift(x)));
+    obj.IFFT = @(x) ifftshift(ifft2(ifftshift(x)));
+
     [Kx,Ky]=meshgrid([-N:N-1],[-M:M-1]);
     Kx=Kx*pi/N; 
     Ky=Ky*pi/M;

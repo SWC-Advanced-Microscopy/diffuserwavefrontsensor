@@ -11,7 +11,7 @@ function plotWavefront(obj)
 
 
     tFig=dws.focusNamedFig('resultsFigName');
-    plotGradients=false;
+    plotGradients=true;
 
     if plotGradients
         subplot(2,2,1,'parent',tFig)
@@ -37,13 +37,15 @@ function plotWavefront(obj)
     axis equal tight
 
 
+    % Fit Zernikes
     obj.calcZernike
+
+
     if plotGradients
-        subplot(2,2,3,'parent',tFig)
+        subplot(2,2,4,'parent',tFig)
     else
         subplot(2,1,2,'parent',tFig)
     end
-    subplot(2,2,4,'parent',tFig)
     n=length(obj.zernNames);
     barh(obj.zernCoefs)
     set(gca,'YTick',1:n,'YTickLabel',obj.zernNames)
