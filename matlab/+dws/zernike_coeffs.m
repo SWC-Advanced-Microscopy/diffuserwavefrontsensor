@@ -27,7 +27,7 @@ function varargout = zernike_coeffs(phi, M, forcePrint)
 % Note: zernfun.m is required for use with this file. It is available here: 
 %       http://www.mathworks.com/matlabcentral/fileexchange/7687 
 
-if nargin == 1
+if nargin < 1
     M = 12;
 end
 if M > 105
@@ -68,7 +68,6 @@ else
 end
 
 
-
 %Coef names
 cNames={'piston', ...
     'vertical tilt', ...
@@ -93,6 +92,7 @@ cNames={'piston', ...
     'UNKNOWN',...
     'secondary SA (I THINK)' , ...
     };
+cNames = cNames(1:M);
 
 if nargout==0 || forcePrint
     for ii=1:length(a)

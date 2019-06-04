@@ -50,7 +50,7 @@ classdef diffusersensor < handle
                       %before calculating the wavefront 
 
         doFitZernike = true % If true we fit Zernike polynomials to the phase plot
-
+        nZernPoly = 13   % Number of Zernike polynomials to return
         zernImSize = 512 %Use a square phase image of this size to calculate the zernike coefs. 
                          %zernImSize can be quite small compared to the original image as the 
                          %phase plot should be smooth
