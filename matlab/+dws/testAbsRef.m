@@ -4,7 +4,7 @@ function dws=testAbsRef
     % dws is an instance of diffusersensor
     % run from root directory of matlab code
 
-
+    
     imRef = imread('../example_images/ref.bmp');
     imTst = imread('../example_images/lens.bmp');
 

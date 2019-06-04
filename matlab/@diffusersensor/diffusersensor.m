@@ -45,7 +45,8 @@ classdef diffusersensor < handle
 
         gradientImDownscaleFactor = 0.5 % Downscale the gradients by this factor (on top of raw image resize)
 
-        frameDownscaleFactor = 1    % Scaling factor for images before they are processed
+        frameDownscaleFactor = 1  % Scaling factor for images before they are processed. 
+                                  % This will speed up processing at the cost of larger pixel size
         transCor=false %If true, perform a translation correction of last image to reference
                       %before calculating the wavefront 
 
@@ -96,14 +97,19 @@ classdef diffusersensor < handle
             end
 
             % Connect to the camera
-            obj.cam = dws.camera(camToStart);
+            try
+                obj.cam = dws.camera(camToStart);
 
-            % Build figure window: make a new one or clear an existing one and re-use it.
-            obj.hFig = dws.focusNamedFig(obj.figTagName);
-            obj.hFig.CloseRequestFcn = @obj.closeFig;
-            clf(obj.hFig)
-            obj.hImAx=axes(obj.hFig);
-            rPos = obj.cam.vid.ROIPosition;
+                % Build figure window: make a new one or clear an existing one and re-use it.
+                obj.hFig = dws.focusNamedFig(obj.figTagName);
+                obj.hFig.CloseRequestFcn = @obj.closeFig;
+                clf(obj.hFig)
+                obj.hImAx=axes(obj.hFig);
+                rPos = obj.cam.vid.ROIPosition;
+            catch ME
+                delete(obj)
+                rethrow(ME)
+            end
 
             % We will want to acquire square images only otherwise zernike coefs can't be calculated
             m=min(rPos(3:4));
@@ -133,8 +139,7 @@ classdef diffusersensor < handle
 
 
         function delete(obj)
-            stop(obj.cam.vid)
-            delete(obj.cam.vid)
+            delete(obj.cam)
             delete(obj.hFig)
         end
 
@@ -147,14 +152,12 @@ classdef diffusersensor < handle
 
 
         function startVideo(obj)
-            start(obj.cam.vid)
-            trigger(obj.cam.vid)
+            obj.cam.startVideo
         end
 
 
         function stopVideo(obj)
-            stop(obj.cam.vid)
-            flushdata(obj.cam.vid)
+            obj.cam.stopVideo
         end
 
 
@@ -196,7 +199,7 @@ classdef diffusersensor < handle
                 tmpIm(:,:,3)=0;
                 obj.hImLive.CData = tmpIm;
             end
-            obj.hTitle.String = sprintf('%d frames acquired',obj.cam.vid.FramesAcquired);
+            obj.hTitle.String = sprintf('%d frames acquired',obj.cam.framesAcquired);
             drawnow
         end
 

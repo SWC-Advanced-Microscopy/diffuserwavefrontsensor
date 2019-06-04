@@ -23,6 +23,13 @@ classdef camera < handle
                 camToStart=[];
             end
 
+            if strcmpi(camToStart,'demo')
+                fprintf('dws.camera is starting with a dummy camera\n')
+                obj.vid.ROIPosition=[0,0,2048,2048]; % Make up a sensor size
+                % No camera is started
+                return
+            end
+
             % Find which adapters are installed
             cams=imaqhwinfo;
             if isempty(cams.InstalledAdaptors)
@@ -78,9 +85,42 @@ classdef camera < handle
 
 
         function delete(obj)
-            delete(obj.vid)
+            if isa(obj.vid,'videoinput')
+                stop(obj.vid)
+                delete(obj.vid)
+            end
         end % close destructor
 
+
+        function startVideo(obj)
+            if isa(obj.vid,'videoinput')
+                start(obj.vid)
+                trigger(obj.vid)
+            end
+        end
+
+        function stopVideo(obj)
+            if isa(obj.vid,'videoinput')
+                stop(obj.cam.vid)
+                flushdata(obj.cam.vid)
+            end
+        end
+
+        function vidRunning=isrunning(obj)
+            if isa(obj.vid,'videoinput')
+                vidRunning=isrunning(obj.vid);
+            else
+                vidRunning = false;                
+            end
+        end
+
+        function nFrm=framesAcquired(obj)
+            if isa(obj.vid,'videoinput')
+                nFrm=obj.vid.FramesAcquired;
+            else
+                nFrm=0;
+            end
+        end
 
     end
 

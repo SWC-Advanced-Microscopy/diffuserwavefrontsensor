@@ -8,7 +8,7 @@ function calcPhase(obj)
     end
 
     %Stop the acquisition if it's running (and restart at the end)
-    vidRunning=isrunning(obj.cam.vid);
+    vidRunning=obj.cam.isrunning;
     if vidRunning
         obj.stopVideo
     end

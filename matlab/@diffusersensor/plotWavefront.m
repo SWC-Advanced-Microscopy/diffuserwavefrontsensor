@@ -4,7 +4,8 @@ function plotWavefront(obj)
     if isempty(obj.phaseImage)
         return
     end
-    vidRunning=isrunning(obj.cam.vid);
+
+    vidRunning = obj.cam.isrunning;
     if vidRunning
         obj.stopVideo
     end
