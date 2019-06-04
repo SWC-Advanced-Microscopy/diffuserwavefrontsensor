@@ -107,6 +107,9 @@ function calcPhase(obj)
     obj.phaseImage=SF*prov([1:M],[1:N]);
 
 
+    % Get rid of most of the piston, since our sensor can't measure this
+    obj.phaseImage=obj.phaseImage-mean(obj.phaseImage(:));
+
 
     % Fit Zernikes
     if obj.doFitZernike

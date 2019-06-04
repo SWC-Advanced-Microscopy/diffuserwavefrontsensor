@@ -1,4 +1,13 @@
 classdef camera < handle
+    % dws.camera
+    %
+    % Purpose
+    % This class acts as an interface between the diffusersensor class and the MATLAB 
+    % image acquisition toolbox. 
+    % TODO - Currently this class does nothing very interesting, but in future it will 
+    %        ensure there is a consistent interface for handling things like camera exposure.
+    %
+    %
 
     properties
         vid   % Holds the camera object
