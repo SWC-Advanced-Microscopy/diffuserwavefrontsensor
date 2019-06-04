@@ -10,14 +10,16 @@ function [out,str] = returnResults(obj)
 
     % Build an output structure
     varsToExport={'refImage', 'testImage', 'phaseImage', ...
-                  'zernCoefs', 'zernNames', 'gradients'};
+                  'zernCoefs', 'zernNames', 'gradients', ...
+                  'frameDownscaleFactor', 'gradientImDownscaleFactor', ...
+                  'zernImSize'};
 
     for ii=1:length(varsToExport);
         out.(varsToExport{ii}) = obj.(varsToExport{ii});
     end
 
     % Time stamp the structure
-    out.timeAcquired = datestr(obj.lastPhaseImTime,'YYYY-mm-dd HH-MM-SS');
+    out.timeAcquired = datestr(obj.lastPhaseImTime,'YYYY-mm-dd_HH-MM-SS');
 
     % Store camera info
     out.cameraName = obj.cam.vid.Name;
@@ -27,7 +29,8 @@ function [out,str] = returnResults(obj)
         str='';
         str = [str, sprintf('time_acquired: %s\n', out.timeAcquired)];
         str = [str, sprintf('camera_name: %s\n', out.cameraName)];
-
+        str = [str, sprintf('frameDownscaleFactor: %0.2f\n', out.frameDownscaleFactor)]; 
+        str = [str, sprintf('zernImSize: %0.2f\n', out.zernImSize)];
         for ii=1:length(out.zernNames)
             str = [str, sprintf('%s: %0.4f\n', out.zernNames{ii}, out.zernCoefs(ii))];
         end

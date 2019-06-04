@@ -24,10 +24,10 @@ function calcPhase(obj)
 
 
 
-    if obj.resizeBy<=1 && obj.resizeBy>0.1
+    if obj.frameDownscaleFactor<=1 && obj.frameDownscaleFactor>0.1
         pixSize = pixSize / obj.resize; %Correct the pixel size
-        testImage = imresize(testImage,obj.resizeBy);
-        refImage = imresize(refImage,obj.resizeBy);
+        testImage = imresize(testImage,obj.frameDownscaleFactor);
+        refImage = imresize(refImage,obj.frameDownscaleFactor);
     end
 
     if obj.transCor

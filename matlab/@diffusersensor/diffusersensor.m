@@ -45,7 +45,7 @@ classdef diffusersensor < handle
 
         gradientImDownscaleFactor = 0.5 % Downscale the gradients by this factor (on top of raw image resize)
 
-        resizeBy = 1    % Scaling factor for images before they are processed
+        frameDownscaleFactor = 1    % Scaling factor for images before they are processed
         transCor=false %If true, perform a translation correction of last image to reference
                       %before calculating the wavefront 
 
