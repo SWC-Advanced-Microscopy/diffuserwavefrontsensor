@@ -203,9 +203,6 @@ classdef diffusersensor < handle
         end
 
 
-
-
-
     end % Close methods
 
 end % close diffusersensor
