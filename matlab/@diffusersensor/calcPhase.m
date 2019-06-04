@@ -10,7 +10,7 @@ function calcPhase(obj)
     %Stop the acquisition if it's running (and restart at the end)
     vidRunning=obj.cam.isrunning;
     if vidRunning
-        obj.stopVideo
+        obj.cam.stopVideo
     end
     verbose=true;
 
@@ -122,6 +122,6 @@ function calcPhase(obj)
     obj.lastPhaseImTime = now; %Update the time at which the phase image was last calculated        
 
     if vidRunning
-        obj.startVideo
+        obj.cam.startVideo
     end
 end

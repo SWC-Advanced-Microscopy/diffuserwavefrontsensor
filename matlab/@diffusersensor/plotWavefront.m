@@ -7,7 +7,7 @@ function plotWavefront(obj)
 
     vidRunning = obj.cam.isrunning;
     if vidRunning
-        obj.stopVideo
+        obj.cam.stopVideo
     end
 
 
@@ -58,7 +58,7 @@ function plotWavefront(obj)
 
 
     if vidRunning
-        obj.startVideo
+        obj.cam.startVideo
     end
 
 end

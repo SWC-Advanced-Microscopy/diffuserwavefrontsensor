@@ -43,6 +43,9 @@ classdef diffusersensor < handle
         lambda      % Illumination wavelength in nm
         camDistance % Distance from camera to diffuser in mm 
 
+        refImage   % An optional previously loaded reference image 
+        testImage  % Last acquired frame
+
         gradientImDownscaleFactor = 0.5 % Downscale the gradients by this factor (on top of raw image resize)
 
         frameDownscaleFactor = 1  % Scaling factor for images before they are processed. 
@@ -72,8 +75,6 @@ classdef diffusersensor < handle
         colsToKeep
 
         % Properties that conntain results
-        refImage   % An optional previously loaded reference image 
-        testImage  % Last acquired frame
         phaseImage % The wavefront image will be stored here
         zernNames  % Names of the Zernike coefs
         zernCoefs  % Zernike coefs
@@ -134,7 +135,7 @@ classdef diffusersensor < handle
             axis equal tight
 
             obj.cam.vid.FramesAcquiredFcn = @obj.dispImage;
-            obj.startVideo
+            obj.cam.startVideo
         end
 
 
@@ -148,16 +149,6 @@ classdef diffusersensor < handle
             % Find the wavefront shape and graph it
             obj.calcPhase
             obj.plotWavefront
-        end
-
-
-        function startVideo(obj)
-            obj.cam.startVideo
-        end
-
-
-        function stopVideo(obj)
-            obj.cam.stopVideo
         end
 
 
@@ -182,10 +173,10 @@ classdef diffusersensor < handle
                 return
             end
 
-            tmp=squeeze(peekdata(obj.cam.vid,1));
+            tmp=obj.cam.getLastFrame;
             obj.testImage = tmp(obj.rowsToKeep,obj.colsToKeep);
 
-            flushdata(obj.cam.vid)
+            obj.cam.flushdata
             obj.updateLiveImage
         end
 

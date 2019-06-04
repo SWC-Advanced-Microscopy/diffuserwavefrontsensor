@@ -106,6 +106,18 @@ classdef camera < handle
             end
         end
 
+        function flushdata(obj)
+            if isa(obj.vid,'videoinput')
+                flushdata(obj.vid)
+            end
+        end
+
+        function getLastFrame(obj)
+            if isa(obj.vid,'videoinput')
+                squeeze(peekdata(obj.vid,1));
+            end
+        end
+
         function vidRunning=isrunning(obj)
             if isa(obj.vid,'videoinput')
                 vidRunning=isrunning(obj.vid);
@@ -121,6 +133,8 @@ classdef camera < handle
                 nFrm=0;
             end
         end
+
+
 
     end
 
