@@ -39,7 +39,7 @@ The effect is similar to placing a negative lens in front of a laser, but since 
 Mount the fibre to a [translation stage](https://www.thorlabs.com/thorproduct.cfm?partnumber=PT1#ad-image-0), placing it a short distance (one meter or so) from the camera. 
 Take a reference image, translate the fibre a few hundred microns and make a measurement. 
 You should obtain a wavefront that resembles the [Zernike polynomial](https://en.wikipedia.org/wiki/Zernike_polynomials) that [corresponds to defocus](https://www.telescope-optics.net/zernike_aberrations.htm). 
-i.e. that's the component that looks like a 2D Gaussian.
+<img src="example_images/example_defocus.jpg" />
 This works because the sag of the wavefront across the sensor varies with distance from the fibre tip.
 Translate the fibre a few hundred microns the other way and the wavefront plot should invert. 
 
