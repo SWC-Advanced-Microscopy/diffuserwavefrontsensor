@@ -25,15 +25,15 @@ function [out,str] = returnResults(obj)
 
     if nargout>1
         str='';
-        str = [str, sprintf('pixSize: %0.2f\n', out.pixSize)];
-        str = [str, sprintf('lambda: %0.2f\n', out.lambda)];
-        str = [str, sprintf('camDistance: %0.2f\n', out.camDistance)];
-        str = [str, sprintf('time_acquired: %s\n', out.timeAcquired)];
-        str = [str, sprintf('camera_name: %s\n', out.cameraName)];
-        str = [str, sprintf('frameDownscaleFactor: %0.2f\n', out.frameDownscaleFactor)]; 
-        str = [str, sprintf('zernImSize: %d\n', out.zernImSize)];
+        str = [str, sprintf('pixSize:%0.2f\n', out.pixSize)];
+        str = [str, sprintf('lambda:%0.2f\n', out.lambda)];
+        str = [str, sprintf('camDistance:%0.2f\n', out.camDistance)];
+        str = [str, sprintf('time_acquired:%s\n', out.timeAcquired)];
+        str = [str, sprintf('camera_name:%s\n', out.cameraName)];
+        str = [str, sprintf('frameDownscaleFactor:%0.2f\n', out.frameDownscaleFactor)]; 
+        str = [str, sprintf('zernImSize:%d\n', out.zernImSize)];
         for ii=1:length(out.zernCoefs)
-            str = [str, sprintf('zernCoef %s: %0.3f', out.zernNames{ii}, out.zernCoefs(ii))];
+            str = [str, sprintf('zernCoef %s:%0.3f', out.zernNames{ii}, out.zernCoefs(ii))];
             if ii<length(out.zernCoefs)
                 str = [str, sprintf('\n')];
             end

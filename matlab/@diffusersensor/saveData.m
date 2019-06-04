@@ -42,19 +42,19 @@ function varargout= saveData(obj,fname)
 
 
     % Write the data
-    descriptionStr = sprintf('imageID: refImage\n%s',metadataString);
+    descriptionStr = sprintf('imageID:refImage\n%s',metadataString);
     imwrite(data.refImage,fname,'tiff','writemode','overwrite','Description',descriptionStr,options{:})  
 
-    descriptionStr = sprintf('imageID: testImage\n%s',metadataString);
+    descriptionStr = sprintf('imageID:testImage\n%s',metadataString);
     imwrite(data.testImage,fname,'tiff','writemode','append','Description',descriptionStr,options{:})  
 
-    descriptionStr = sprintf('imageID: gradient1\n%s',metadataString);
+    descriptionStr = sprintf('imageID:gradient1\n%s',metadataString);
     imwrite(imresize(data.gradients(:,:,1),s),fname,'tiff','writemode','append','Description',descriptionStr,options{:})  
 
-    descriptionStr = sprintf('imageID: gradient2\n%s',metadataString);
+    descriptionStr = sprintf('imageID:gradient2\n%s',metadataString);
     imwrite(imresize(data.gradients(:,:,2),s),fname,'tiff','writemode','append','Description',descriptionStr,options{:})  
 
-    descriptionStr = sprintf('imageID: phaseImage\n%s',metadataString);
+    descriptionStr = sprintf('imageID:phaseImage\n%s',metadataString);
     imwrite(imresize(data.phaseImage,s),fname,'tiff','writemode','append','Description',descriptionStr,options{:}) 
 
 
