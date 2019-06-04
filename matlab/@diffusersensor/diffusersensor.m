@@ -50,9 +50,12 @@ classdef diffusersensor < handle
         lastFrame  % Last acquired frame
         phaseImage % The wavefront image will be stored here
 
+        gradientImDownscaleFactor = 0.5 % Downscale the gradients by this factor (on top of raw image resize)
+
         transCor=false %If true, perform a translation correction of last image to reference
                       %before calculating the wavefront 
 
+        doFitZernike = true % If true we fit Zernike polynomials to the phase plot
         zernNames  % Names of the Zernike coefs
         zernCoefs  % Zernike coefs
         zernImSize = 512 %Use a square phase image of this size to calculate the zernike coefs. 

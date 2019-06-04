@@ -1,7 +1,7 @@
 function calcPhase(obj)
     % diffusersensor.calcphase
     %
-    % Calculate the phase plot 
+    % Calculate the phase plot and fit Zernike polynomials to it
 
     if isempty(obj.refImage)
         return
@@ -23,8 +23,9 @@ function calcPhase(obj)
     refImage =obj.refImage;
 
 
-    % TODO: if we resize we need to change the pixel size (see below too)
+
     if obj.resizeBy<=1 && obj.resizeBy>0.1
+        pixSize = pixSize / obj.resize; %Correct the pixel size
         lastFrame = imresize(lastFrame,obj.resizeBy);
         refImage = imresize(refImage,obj.resizeBy);
     end
@@ -68,8 +69,12 @@ function calcPhase(obj)
         fprintf('done\n')
     end
 
-    % TODO: if we resize we need to change the pixel size
-    %obj.demons = imresize(obj.demons,0.5); %resize since the gradients are smooth anyway
+    % We can resize the gradient images further, as they should be smooth
+    if obj.gradientImDownscaleFactor<1 && obj.gradientImDownscaleFactor>0.1
+        pixSize = pixSize / obj.gradientImDownscaleFactor;
+        obj.demons = imresize(obj.demons,obj.gradientImDownscaleFactor 0.5);
+    end
+
     %----------   symetrization for gradient integration   ----------
     if verbose
         fprintf('Fourier integration...')
@@ -103,6 +108,17 @@ function calcPhase(obj)
     % ----------   phase scaling factor   ----------
     SF=2*pi*pixSize^2/(lambda*camDistance); %scaling factor
     obj.phaseImage=SF*prov([1:M],[1:N]);
+
+
+
+    % Fit Zernikes
+    if obj.doFitZernike
+        obj.calcZernike
+    else
+        obj.zernCoefs=[];
+        obj.zernNames=[];
+    end
+        
 
     if vidRunning
         obj.startVideo
