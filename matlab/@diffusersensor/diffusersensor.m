@@ -37,13 +37,15 @@ classdef diffusersensor < handle
 
     % The following properties relate to settings the user can modify to alter the behavior of the class
     properties (SetObservable)
-        resizeBy = 1    % Scaling factor for images before they are processed
-        pixSize = 4.65  % Pixel size of camera
-        lambda = 635    % Illumination wavelength in nm
-        camDistance = 1 % Distance from camera to diffuser in mm 
+        % NOTE: If you wish to edit these properties you should edit the dws_settings.m file
+        %       which is created the first time the software is run.      
+        pixSize     % Pixel size of camera
+        lambda      % Illumination wavelength in nm
+        camDistance % Distance from camera to diffuser in mm 
 
         gradientImDownscaleFactor = 0.5 % Downscale the gradients by this factor (on top of raw image resize)
 
+        resizeBy = 1    % Scaling factor for images before they are processed
         transCor=false %If true, perform a translation correction of last image to reference
                       %before calculating the wavefront 
 
@@ -84,8 +86,15 @@ classdef diffusersensor < handle
 
     methods
         function obj = diffusersensor(camToStart)
+
+            % Load camera/sensor settings from file
+            out = dws.readSettings;
+            obj.pixSize = out.pixSize;
+            obj.lambda = out.lambda;
+            obj.camDistance = out.camDistance;
+
             if nargin<1
-                camToStart=[];
+                camToStart = out.camToStart;
             end
 
             % Connect to the camera

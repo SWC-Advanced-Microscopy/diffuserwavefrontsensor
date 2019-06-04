@@ -14,8 +14,9 @@ function calcZernike(obj)
     else
         tmpIm = obj.phaseImage;
     end
-        
+
     [obj.zernCoefs,obj.zernNames]=zernike_coeffs(tmpIm,n,obj.printZernCoefs);
+
     obj.zernCoefs(1)=0; %Force to zero since we can't measure it
 
 end

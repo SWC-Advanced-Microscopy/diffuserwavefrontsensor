@@ -14,6 +14,7 @@ classdef camera < handle
                 camToStart='basler';
             end
 
+            %Runs one of the camera functions in the camera private sub-directory
             obj.vid = eval(camToStart);
             obj.src = getselectedsource(obj.vid);
 
@@ -36,21 +37,3 @@ classdef camera < handle
 
 end
 
-% Connect to a camera
-
-
-
-
-
-% Following are temporary functions to set up a known camera
-function vid=basler
-    vid = videoinput('gentl', 1, 'Mono8');
-    src.AcquisitionFrameRateEnable = 'True';
-    src.AcquisitionFrameRate = 1;
-end
-
-
-function vid=macbook
-    vid = videoinput('macvideo', 1, 'YCbCr422_1280x720');
-    vid.FramesPerTrigger = 1;
-end
