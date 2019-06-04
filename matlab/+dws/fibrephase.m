@@ -5,7 +5,8 @@ function varargout=fibrephase(fDist,pupilSize,lambda)
     %
     % Purpose
     % This function is intended to be used to calculate the phase delay across the sensor
-    % when illuminated by a single-mode fibre at a known distance. 
+    % when illuminated by a single-mode fibre at a known distance. A plot is produced unless
+    % the user opts to return data, in which case no plot is produced. 
     %
     %
     % Inputs
@@ -15,7 +16,7 @@ function varargout=fibrephase(fDist,pupilSize,lambda)
     % lambda - the wavelength of the illumination light in nm. Default is 635 nm.
     %
     %
-    % Outputs
+    % Outputs (optional)
     % out - A structure with the phase curves and inputs used to produce them. 2D phase plots
     %       are returned. 
     %
@@ -61,40 +62,18 @@ function varargout=fibrephase(fDist,pupilSize,lambda)
         Z = cat(3,Z,z);
     end
 
-    tFig=dws.focusNamedFig('fibrephase');
-    clf(tFig)
+
 
     % Convert coordinates to mm
     X=X*1E3;
     Y=Y*1E3;
 
+
     % Turn Z into a phase delay
     Z=bsxfun(@minus, Z, max(max(Z)) ); %To remove piston
     Z=(Z*1E9)/lambda;
 
-
-    subplot(1,2,1)
-    doLinePlot(X,Z)
-    ylabel('Phase delay')
-
-    subplot(1,2,2)
-    if length(fDist)>2
-        doLinePlot(X,  bsxfun(@minus,Z,Z(:,:,1)) )
-        ylabel('\Delta Phase delay')
-    else
-        if length(fDist)==2
-            zz = diff(Z,[],3);
-        else
-            zz = Z;            
-        end
-        imagesc(zz)
-        axis square
-        colorbar
-    end    
-
-
-
-    % Prepare output arguments
+    % Prepare output arguments if necessary
     if nargout>0
         out.sensorPosX = X;
         out.sensorPosY = Y;
@@ -103,12 +82,38 @@ function varargout=fibrephase(fDist,pupilSize,lambda)
         out.pupilSize = pupilSize;
         out.fDist = fDist;
         varargout{1}=out;
+        return
+    end
+
+
+    % Plot if no outputs were requested
+    tFig=dws.focusNamedFig(mfilename);
+    clf(tFig)
+
+    subplot(1,2,1)
+    doLinePlot(X,Z)
+    ylabel('Phase delay')
+
+    subplot(1,2,2)
+    if length(fDist)>2
+        doLinePlot(X,  bsxfun(@minus,Z,Z(:,:,1)) )
+        ylabel('\Delta phase delay')
+    else
+        if length(fDist)==2
+            zz = diff(Z,[],3);
+        else
+            zz = Z;
+        end
+        imagesc(zz)
+        axis square off
+        title('\Delta phase delay')
+        colorbar
     end
 
 
 
 
-
+    % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
     % Internal functions follow
     function doLinePlot(X,Z)
         n=size(X,3); % The number of distances to plot
