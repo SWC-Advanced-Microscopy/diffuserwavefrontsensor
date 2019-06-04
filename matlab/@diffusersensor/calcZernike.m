@@ -15,7 +15,7 @@ function calcZernike(obj)
         tmpIm = obj.phaseImage;
     end
 
-    [obj.zernCoefs,obj.zernNames]=zernike_coeffs(tmpIm,n,obj.printZernCoefs);
+    [obj.zernCoefs,obj.zernNames]=dws.zernike_coeffs(tmpIm,n,obj.printZernCoefs);
 
     obj.zernCoefs(1)=0; %Force to zero since we can't measure it
 

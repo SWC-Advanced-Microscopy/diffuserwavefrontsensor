@@ -28,7 +28,7 @@ function varargout= saveData(obj,fname)
 
     [data,metadataString] = obj.returnResults;
 
-    fnameHead = ['dws_',out.timeAcquired]; % we will tag the file this way
+    fnameHead = ['dws_',data.timeAcquired]; % we will tag the file this way
 
     if length(fname)==0
         fname = [fnameHead,'.tiff'];
@@ -42,20 +42,20 @@ function varargout= saveData(obj,fname)
 
 
     % Write the data
-    descriptionStr = sprintf('imageID: reference image\n%s',metadataString);
+    descriptionStr = sprintf('imageID: refImage\n%s',metadataString);
     imwrite(data.refImage,fname,'tiff','writemode','overwrite','Description',descriptionStr,options{:})  
 
-    descriptionStr = sprintf('imageID: test image\n%s',metadataString);
+    descriptionStr = sprintf('imageID: testImage\n%s',metadataString);
     imwrite(data.testImage,fname,'tiff','writemode','append','Description',descriptionStr,options{:})  
 
-    descriptionStr = sprintf('imageID: gradient 1\n%s',metadataString);
+    descriptionStr = sprintf('imageID: gradient1\n%s',metadataString);
     imwrite(imresize(data.gradients(:,:,1),s),fname,'tiff','writemode','append','Description',descriptionStr,options{:})  
 
-    descriptionStr = sprintf('imageID: gradient 2\n%s',metadataString);
+    descriptionStr = sprintf('imageID: gradient2\n%s',metadataString);
     imwrite(imresize(data.gradients(:,:,2),s),fname,'tiff','writemode','append','Description',descriptionStr,options{:})  
 
-    descriptionStr = sprintf('imageID: wavefront\n%s',metadataString);
-    imwrite(imresize(phaseImage,s),fname,'tiff','writemode','append','Description',descriptionStr,options{:}) 
+    descriptionStr = sprintf('imageID: phaseImage\n%s',metadataString);
+    imwrite(imresize(data.phaseImage,s),fname,'tiff','writemode','append','Description',descriptionStr,options{:}) 
 
 
 end

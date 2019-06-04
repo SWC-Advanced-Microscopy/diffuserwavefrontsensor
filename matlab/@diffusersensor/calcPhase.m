@@ -25,7 +25,7 @@ function calcPhase(obj)
 
 
     if obj.frameDownscaleFactor<=1 && obj.frameDownscaleFactor>0.1
-        pixSize = pixSize / obj.resize; %Correct the pixel size
+        pixSize = pixSize / obj.frameDownscaleFactor; %Correct the pixel size
         testImage = imresize(testImage,obj.frameDownscaleFactor);
         refImage = imresize(refImage,obj.frameDownscaleFactor);
     end
@@ -72,7 +72,7 @@ function calcPhase(obj)
     % We can resize the gradient images further, as they should be smooth
     if obj.gradientImDownscaleFactor<1 && obj.gradientImDownscaleFactor>0.1
         pixSize = pixSize / obj.gradientImDownscaleFactor;
-        obj.gradients = imresize(obj.gradients,obj.gradientImDownscaleFactor 0.5);
+        obj.gradients = imresize(obj.gradients,obj.gradientImDownscaleFactor);
     end
 
     %----------   symetrization for gradient integration   ----------
