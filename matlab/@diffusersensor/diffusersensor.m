@@ -65,8 +65,6 @@ classdef diffusersensor < handle
 
         figTagName = 'wavSenseGUI'
         resultsFigName = 'phaseResults'
-        FFT  % Anonmynous function handle
-        IFFT % Anonmynous function handle
 
         % The following two properties are used by dispImage for returning square images
         rowsToKeep

@@ -90,9 +90,6 @@ function calcPhase(obj)
 
 
     %----------   Fourier integration   ----------
-    % Make anonymous functions
-    obj.FFT  = @(x) fftshift(fft2(fftshift(x)));
-    obj.IFFT = @(x) ifftshift(ifft2(ifftshift(x)));
 
     [Kx,Ky]=meshgrid([-N:N-1],[-M:M-1]);
     Kx=Kx*pi/N; 
@@ -100,7 +97,7 @@ function calcPhase(obj)
     S=Kx+1i*Ky;
     Ks=zeros(2*M,2*N); Ks(S~=0)=1./S(S~=0);
 
-    prov=real( obj.IFFT( -1i*Ks.*obj.FFT(D2(:,:,1)+1i*D2(:,:,2)) ) );
+    prov=real( dws.IFFT( -1i*Ks.*dws.FFT(D2(:,:,1)+1i*D2(:,:,2)) ) );
 
     if verbose
         fprintf('done\n')
