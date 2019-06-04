@@ -17,12 +17,12 @@ function plotWavefront(obj)
     % Optionally plot the gradient images
     if plotGradients
         subplot(2,2,1,'parent',tFig)
-        imagesc(obj.demons(:,:,1))
+        imagesc(obj.gradients(:,:,1))
         title('GradientX') 
         axis equal tight
 
         subplot(2,2,2,'parent',tFig)
-        imagesc(obj.demons(:,:,2))
+        imagesc(obj.gradients(:,:,2))
         title('GradientY')
         axis equal tight
     end

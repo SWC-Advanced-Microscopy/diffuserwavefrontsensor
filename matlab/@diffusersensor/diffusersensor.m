@@ -32,23 +32,15 @@ classdef diffusersensor < handle
 
 
     properties
-        hFig     % The handle of the figure window
-        hImAx    % The handle of the image axes
-        hImLive  % The handle of the streaming camera image in the image axes
-        hTitle   % Title of live image
         cam      % The camera class
-
     end
 
+    % The following properties relate to settings the user can modify to alter the behavior of the class
     properties (SetObservable)
         resizeBy = 1    % Scaling factor for images before they are processed
-        pixSize = 4.65  % Pixel size of camera  <-- TODO: can we extract from camera class?
+        pixSize = 4.65  % Pixel size of camera
         lambda = 635    % Illumination wavelength in nm
         camDistance = 1 % Distance from camera to diffuser in mm 
-
-        refImage   % An optional previously loaded reference image 
-        lastFrame  % Last acquired frame
-        phaseImage % The wavefront image will be stored here
 
         gradientImDownscaleFactor = 0.5 % Downscale the gradients by this factor (on top of raw image resize)
 
@@ -56,8 +48,7 @@ classdef diffusersensor < handle
                       %before calculating the wavefront 
 
         doFitZernike = true % If true we fit Zernike polynomials to the phase plot
-        zernNames  % Names of the Zernike coefs
-        zernCoefs  % Zernike coefs
+
         zernImSize = 512 %Use a square phase image of this size to calculate the zernike coefs. 
                          %zernImSize can be quite small compared to the original image as the 
                          %phase plot should be smooth
@@ -65,6 +56,11 @@ classdef diffusersensor < handle
     end
 
     properties (Hidden)
+        hFig     % The handle of the figure window containing the camera stream
+        hImAx    % The handle of the image axes
+        hImLive  % The handle of the streaming camera image in the image axes
+        hTitle   % Title of live image
+
         figTagName = 'wavSenseGUI'
         resultsFigName = 'phaseResults'
         FFT  % Anonmynous function handle
@@ -74,7 +70,15 @@ classdef diffusersensor < handle
         rowsToKeep
         colsToKeep
 
-        demons % The first output of the demon registration
+        % Properties that conntain results
+        refImage   % An optional previously loaded reference image 
+        testImage  % Last acquired frame
+        phaseImage % The wavefront image will be stored here
+        zernNames  % Names of the Zernike coefs
+        zernCoefs  % Zernike coefs
+        gradients  % The first output of the demon registration: the deformations in x and y
+
+        lastPhaseImTime % The time at which the phase image was last calculated
     end
 
 
@@ -120,11 +124,13 @@ classdef diffusersensor < handle
             obj.startVideo
         end
 
+
         function delete(obj)
             stop(obj.cam.vid)
             delete(obj.cam.vid)
             delete(obj.hFig)
         end
+
 
         function getPhase(obj)
             % Find the wavefront shape and graph it
@@ -132,23 +138,34 @@ classdef diffusersensor < handle
             obj.plotWavefront
         end
 
+
         function startVideo(obj)
             start(obj.cam.vid)
             trigger(obj.cam.vid)
         end
+
 
         function stopVideo(obj)
             stop(obj.cam.vid)
             flushdata(obj.cam.vid)
         end
 
+
         function setReference(obj)
-            obj.refImage = obj.lastFrame;
+            obj.refImage = obj.testImage;
         end
+
 
         function clearReference(obj)
             obj.refImage=[];
         end
+
+
+        function closeFig(obj,~,~)
+            obj.delete
+        end
+
+
 
         function dispImage(obj,~,~)
             if obj.cam.vid.FramesAvailable==0
@@ -156,17 +173,18 @@ classdef diffusersensor < handle
             end
 
             tmp=squeeze(peekdata(obj.cam.vid,1));
-            obj.lastFrame = tmp(obj.rowsToKeep,obj.colsToKeep);
+            obj.testImage = tmp(obj.rowsToKeep,obj.colsToKeep);
 
             flushdata(obj.cam.vid)
             obj.updateLiveImage
         end
 
+
         function updateLiveImage(obj)
             if isempty(obj.refImage)
-                obj.hImLive.CData = repmat(obj.lastFrame,[1,1,3]);
+                obj.hImLive.CData = repmat(obj.testImage,[1,1,3]);
             else
-                tmpIm=repmat(obj.lastFrame,[1,1,3]);;
+                tmpIm=repmat(obj.testImage,[1,1,3]);;
                 tmpIm(:,:,1)=obj.refImage;
                 tmpIm(:,:,3)=0;
                 obj.hImLive.CData = tmpIm;
@@ -174,9 +192,9 @@ classdef diffusersensor < handle
             obj.hTitle.String = sprintf('%d frames acquired',obj.cam.vid.FramesAcquired);
             drawnow
         end
-        function closeFig(obj,~,~)
-            obj.delete
-        end
+
+
+
 
 
     end % Close methods
