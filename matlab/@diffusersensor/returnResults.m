@@ -1,6 +1,8 @@
 function [out,str] = returnResults(obj)
     % Return results of the measurements as a structure 
     %
+    % [out,str] = diffusersensor.returnResults
+    %
     % Outputs
     % out - A structure containing the test and reference images
     %       phase plot, etc

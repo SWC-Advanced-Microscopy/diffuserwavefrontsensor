@@ -1,6 +1,8 @@
 function out = loadData(obj,fname)
     % Load results previously saved by saveData
     %
+    % out = diffusersensor.loadData(fname)
+    %
     % Purpose
     % Loads a TIFF stack containing the data from a previous measurement. 
     % Also imports the meta-data and converts to a structure. Plots results

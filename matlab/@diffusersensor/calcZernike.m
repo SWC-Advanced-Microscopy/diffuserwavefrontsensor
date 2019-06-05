@@ -1,13 +1,15 @@
 function calcZernike(obj)
+    % Calculate Zernike coefs
+    %
     % diffusersensor.calcZernike
     %
     % Purpose
     % Calculate Zernike coefs and store the results in the object's properties
 
 
-	if isempty(obj.phaseImage)
-		return
-	end
+    if isempty(obj.phaseImage)
+        return
+    end
 
 
     % Resize the phase image for claculation only if it's larger than the target 

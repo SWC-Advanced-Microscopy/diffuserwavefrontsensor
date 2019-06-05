@@ -1,4 +1,6 @@
 function calcPhase(obj)
+    % Obtain the phase plot (wavefront plot) based on the current reference and test images
+    %
     % diffusersensor.calcphase
     %
     % Calculate the phase plot and fit Zernike polynomials to it

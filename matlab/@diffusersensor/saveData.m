@@ -1,5 +1,7 @@
-function varargout= saveData(obj,fname)
+function saveData(obj,fname)
     % Save data as a multipage TIFF with meta-data in the TIFF header
+    %
+    % diffusersensor.saveData(fname)
     %
     % Purpose
     % Saves to current directory the results of the last wavefront 

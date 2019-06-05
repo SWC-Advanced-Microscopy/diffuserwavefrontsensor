@@ -29,19 +29,29 @@ classdef diffusersensor < handle
     %
     % % Close the phase display window and re-make it without re-calculating
     % d.plotWavefront
+    %
+    %
+    % References
+    % This project is based on the work of Berto, et al. 2017
+    % https://www.osapublishing.org/ol/abstract.cfm?uri=ol-42-24-5117
+    %
+    %
+    % Rob Campbell - SWC 2019
 
 
-    properties
-        cam      % The camera class
-    end
 
     % The following properties relate to settings the user can modify to alter the behavior of the class
-    properties (SetObservable)
+    properties
+        cam      % The camera class
+
+        % -----------------
         % NOTE: If you wish to edit these properties you should edit the dws_settings.m file
         %       which is created the first time the software is run.      
         pixSize     % Pixel size of camera
         lambda      % Illumination wavelength in nm
         camDistance % Distance from camera to diffuser in mm 
+        % -----------------
+
 
         refImage   % An optional previously loaded reference image 
         testImage  % Last acquired frame
@@ -67,14 +77,17 @@ classdef diffusersensor < handle
         hImLive  % The handle of the streaming camera image in the image axes
         hTitle   % Title of live image
 
+        % The following are tag names for reusing figure windows
         figTagName = 'wavSenseGUI'
         resultsFigName = 'phaseResults'
 
-        % The following two properties are used by dispImage for returning square images
+        % The following two properties are used by the method diffusersebsir.dispImage 
+        % for the purpose of returning square images
         rowsToKeep
         colsToKeep
 
-        % Properties that conntain results
+        % Properties that contain results. These may be returned using the method
+        % diffusersensor.returnResults and saved with diffusersensor.saveData
         phaseImage % The wavefront image will be stored here
         zernNames  % Names of the Zernike coefs
         zernCoefs  % Zernike coefs
@@ -84,8 +97,19 @@ classdef diffusersensor < handle
     end
 
 
+
+    % Constructor and destructor
     methods
+
         function obj = diffusersensor(camToStart)
+            % diffusersensor constructor
+            %
+            % obj = diffusersensor(camToStart)
+            %
+            % Inputs
+            % camToStart - Optional input argument defining which camera is to be connected to on startup
+            %
+
 
             % Load camera/sensor settings from file
             out = dws.readSettings;
@@ -97,7 +121,7 @@ classdef diffusersensor < handle
                 camToStart = out.camToStart;
             end
 
-            % Connect to the camera
+            % Connect to the camera and bail out if this fails
             try
                 obj.cam = dws.camera(camToStart);
 
@@ -107,81 +131,69 @@ classdef diffusersensor < handle
                 clf(obj.hFig)
                 obj.hImAx=axes(obj.hFig);
                 rPos = obj.cam.vid.ROIPosition;
+
+                % We will want to acquire square images only otherwise zernike coefs can't be calculated
+                m=min(rPos(3:4));
+                if rPos(3)==m
+                    obj.colsToKeep=1:rPos(3);
+                else
+                    d=round((rPos(3)-m)/2);
+                    obj.colsToKeep=(1:m)+d;
+                end
+                if rPos(4)==m
+                    obj.rowsToKeep=1:rPos(4);
+                else
+                    d=round((rPos(4)-m)/2);
+                    obj.rowsToKeep=(1:m)+d;
+                end
+
+                % Populate the figure window for displaying preview images
+                obj.hImLive = image(zeros(m,m,3),'Parent',obj.hImAx);
+                obj.hTitle = title('');
+                axis equal tight
+
+                obj.cam.vid.FramesAcquiredFcn = @obj.dispImage;
+                obj.cam.startVideo
             catch ME
                 delete(obj)
                 rethrow(ME)
             end
-
-            % We will want to acquire square images only otherwise zernike coefs can't be calculated
-            m=min(rPos(3:4));
-            if rPos(3)==m
-                obj.colsToKeep=1:rPos(3);
-            else
-                d=round((rPos(3)-m)/2);
-                obj.colsToKeep=(1:m)+d;
-            end
-            if rPos(4)==m
-                obj.rowsToKeep=1:rPos(4);
-            else
-                d=round((rPos(4)-m)/2);
-                obj.rowsToKeep=(1:m)+d;
-            end
-
-
-
-
-            obj.hImLive = image(zeros(m,m,3),'Parent',obj.hImAx);
-            obj.hTitle = title('');
-            axis equal tight
-
-            obj.cam.vid.FramesAcquiredFcn = @obj.dispImage;
-            obj.cam.startVideo
-        end
+        end % Close constructor
 
 
         function delete(obj)
+            % Destructor
             delete(obj.cam)
             delete(obj.hFig)
-        end
+        end % Close destructor
 
+    end % Close block containing constructor and destructor
+
+
+
+    % Short methods
+    methods
 
         function getPhase(obj)
             % Find the wavefront shape and graph it
             obj.calcPhase
             obj.plotWavefront
-        end
-
+        end % Close getPhase
 
         function setReference(obj)
+            % Assign the last acquired image as the reference image
             obj.refImage = obj.testImage;
-        end
-
+        end % Close setReference
 
         function clearReference(obj)
+            % Wipe the reference image
             obj.refImage=[];
-        end
-
-
-        function closeFig(obj,~,~)
-            obj.delete
-        end
-
-
-
-        function dispImage(obj,~,~)
-            if obj.cam.vid.FramesAvailable==0
-                return
-            end
-
-            tmp=obj.cam.getLastFrame;
-            obj.testImage = tmp(obj.rowsToKeep,obj.colsToKeep);
-
-            obj.cam.flushdata
-            obj.updateLiveImage
-        end
-
+        end % Close clearReference
 
         function updateLiveImage(obj)
+            % If a reference image does not exist, plot last acquired frame in
+            % grayscale. If a reference image does exist, overlay it on top of
+            % the last acquired image in red/green
             if isempty(obj.refImage)
                 obj.hImLive.CData = repmat(obj.testImage,[1,1,3]);
             else
@@ -192,9 +204,35 @@ classdef diffusersensor < handle
             end
             obj.hTitle.String = sprintf('%d frames acquired',obj.cam.framesAcquired);
             drawnow
+        end % Close updateLiveImage
+
+    end % Close block containing short methods
+
+
+
+    % Callback functions
+    methods
+
+        function closeFig(obj,~,~)
+            obj.delete
         end
 
+        function dispImage(obj,~,~)
+            % This callback is run every time a given number of frames have been 
+            % acquired by the video device
+            if obj.cam.vid.FramesAvailable==0
+                return
+            end
 
-    end % Close methods
+            tmp=obj.cam.getLastFrame;
+            obj.testImage = tmp(obj.rowsToKeep,obj.colsToKeep);
+
+            obj.cam.flushdata
+            obj.updateLiveImage
+        end % dispImage
+
+    end % Close block containing callbacks
+
 
 end % close diffusersensor
+

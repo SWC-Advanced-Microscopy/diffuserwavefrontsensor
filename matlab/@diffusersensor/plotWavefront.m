@@ -1,5 +1,14 @@
 function plotWavefront(obj)
-    % Plot the wavefront
+    % Plot the wavefront and Zernike coefs
+    %
+    % diffusersensor.plotWavefront
+    %
+    % Purpose
+    % This method plots the wavefront and Zernike coefs using 
+    % the current reference and test images stored in the 
+    % diffusersensor object
+    %
+    %
 
     if isempty(obj.phaseImage)
         return
