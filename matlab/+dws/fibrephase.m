@@ -69,9 +69,10 @@ function varargout=fibrephase(fDist,pupilSize,lambda)
     Y=Y*1E3;
 
 
-    % Turn Z into a phase delay
+    % Turn Z, which is the wavefront curvature, into a phase delay
     Z=bsxfun(@minus, Z, max(max(Z)) ); %To remove piston
-    Z=(Z*1E9)/lambda;
+    Z=Z*1E9;    % From meters to nanometers
+    Z=(Z/lambda)*2*pi; % Convert to radians
 
     % Prepare output arguments if necessary
     if nargout>0
@@ -104,10 +105,11 @@ function varargout=fibrephase(fDist,pupilSize,lambda)
         else
             zz = Z;
         end
-        imagesc(zz)
+        imagesc(zz-mean(zz(:)))
         axis square off
-        title('\Delta phase delay')
+        title('\Delta phase (rad)')
         colorbar
+
     end
 
 
