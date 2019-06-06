@@ -42,8 +42,10 @@ classdef camera < handle
             constructorCommands = {};
             for ii=1:length(cams.InstalledAdaptors)
                 tDevice = imaqhwinfo(cams.InstalledAdaptors{ii});
+                if isempty(tDevice.DeviceIDs)
+                    continue
+                end
                 formats = tDevice.DeviceInfo.SupportedFormats;
-                con = tDevice.DeviceInfo.VideoInputConstructor;
                 for jj=1:length(formats)
                     tCom = tDevice.DeviceInfo.VideoInputConstructor; % command to connect to device
                     tCom = strrep(tCom,')',[', ''',formats{jj},''')'] );
@@ -51,13 +53,21 @@ classdef camera < handle
                 end
 
             end
-
+            
             if length(constructorCommands)==1
                 constructorCommand = constructorCommands{1};
             elseif length(constructorCommands)>1 && isempty(camToStart)
                 for ii=1:length(constructorCommands)
                     fprintf('%d  -  %s\n',ii,constructorCommands{ii})
                 end
+                IN='';
+                fprintf('\n')
+                while isempty(IN) | IN<0 | IN>length(constructorCommands)
+                    IN = input('Enter device number and press return: ','s');
+                    IN = str2num(IN);
+                end
+                constructorCommand = constructorCommands{IN};
+                
             elseif length(constructorCommands)>1 && length(camToStart)==1
                 fprintf('Available interfaces:\n')
                 for ii=1:length(constructorCommands)
@@ -101,8 +111,8 @@ classdef camera < handle
 
         function stopVideo(obj)
             if isa(obj.vid,'videoinput')
-                stop(obj.cam.vid)
-                flushdata(obj.cam.vid)
+                stop(obj.vid)
+                flushdata(obj.vid)
             end
         end
 
@@ -112,9 +122,9 @@ classdef camera < handle
             end
         end
 
-        function getLastFrame(obj)
+        function lastFrame=getLastFrame(obj)
             if isa(obj.vid,'videoinput')
-                squeeze(peekdata(obj.vid,1));
+                lastFrame=squeeze(peekdata(obj.vid,1));
             end
         end
 
