@@ -30,7 +30,7 @@ function varargout=apply_ffttrans(movingIm,target,params)
 
 %----------------------------------------------------------------------
 % Handle default options and parameters
-p.usfac=1; %upsampling factor higher values can produce finer
+p.usfac=2; %upsampling factor higher values can produce finer
            %registrations but they also will smear the shot
            %noise. A value of 1 is not sub-pixel and can induce jittering
 p.verbose=0;

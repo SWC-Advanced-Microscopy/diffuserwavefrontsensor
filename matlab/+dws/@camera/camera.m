@@ -1,4 +1,13 @@
 classdef camera < handle
+    % dws.camera
+    %
+    % Purpose
+    % This class acts as an interface between the diffusersensor class and the MATLAB 
+    % image acquisition toolbox. 
+    % TODO - Currently this class does nothing very interesting, but in future it will 
+    %        ensure there is a consistent interface for handling things like camera exposure.
+    %
+    %
 
     properties
         vid   % Holds the camera object
@@ -11,11 +20,68 @@ classdef camera < handle
     methods
         function obj = camera(camToStart)
             if nargin<1 || isempty(camToStart)
-                camToStart='basler';
+                camToStart=[];
             end
 
+            if strcmpi(camToStart,'demo')
+                fprintf('dws.camera is starting with a dummy camera\n')
+                obj.vid.ROIPosition=[0,0,2048,2048]; % Make up a sensor size
+                % No camera is started
+                return
+            end
+
+            % Find which adapters are installed
+            cams=imaqhwinfo;
+            if isempty(cams.InstalledAdaptors)
+                fprintf('NO CAMERAS FOUND by dws.camera\n');
+                delete(obj)
+                return
+            end
+
+            % Loop through each combination of camera and formats and build commands to start each
+            constructorCommands = {};
+            for ii=1:length(cams.InstalledAdaptors)
+                tDevice = imaqhwinfo(cams.InstalledAdaptors{ii});
+                if isempty(tDevice.DeviceIDs)
+                    continue
+                end
+                formats = tDevice.DeviceInfo.SupportedFormats;
+                for jj=1:length(formats)
+                    tCom = tDevice.DeviceInfo.VideoInputConstructor; % command to connect to device
+                    tCom = strrep(tCom,')',[', ''',formats{jj},''')'] );
+                    constructorCommands = [constructorCommands,tCom];
+                end
+
+            end
+            
+            if length(constructorCommands)==1
+                constructorCommand = constructorCommands{1};
+            elseif length(constructorCommands)>1 && isempty(camToStart)
+                for ii=1:length(constructorCommands)
+                    fprintf('%d  -  %s\n',ii,constructorCommands{ii})
+                end
+                IN='';
+                fprintf('\n')
+                while isempty(IN) | IN<0 | IN>length(constructorCommands)
+                    IN = input('Enter device number and press return: ','s');
+                    IN = str2num(IN);
+                end
+                constructorCommand = constructorCommands{IN};
+                
+            elseif length(constructorCommands)>1 && length(camToStart)==1
+                fprintf('Available interfaces:\n')
+                for ii=1:length(constructorCommands)
+                    fprintf('%d  -  %s\n',ii,constructorCommands{ii})
+                end
+                fprintf('\nConnecting to number %d\n', camToStart)
+                constructorCommand = constructorCommands{camToStart};
+            else
+                fprintf('NO CAMERAS FOUND by dws.camera\n');             
+            end
+
+
             %Runs one of the camera functions in the camera private sub-directory
-            obj.vid = eval(camToStart);
+            obj.vid = eval(constructorCommand);
             obj.src = getselectedsource(obj.vid);
 
             % Set up the camera so that it is manually triggerable an 
@@ -23,14 +89,61 @@ classdef camera < handle
             triggerconfig(obj.vid,'manual')
             vid.TriggerRepeat=inf;
             obj.vid.FramesPerTrigger = inf;
-            obj.vid.FramesAcquiredFcnCount=5; %Run frame acq fun every frame
+            obj.vid.FramesAcquiredFcnCount=10; %Run frame acq fun every frame
 
         end % close constructor
 
 
         function delete(obj)
-            delete(obj.vid)
+            if isa(obj.vid,'videoinput')
+                stop(obj.vid)
+                delete(obj.vid)
+            end
         end % close destructor
+
+
+        function startVideo(obj)
+            if isa(obj.vid,'videoinput')
+                start(obj.vid)
+                trigger(obj.vid)
+            end
+        end
+
+        function stopVideo(obj)
+            if isa(obj.vid,'videoinput')
+                stop(obj.vid)
+                flushdata(obj.vid)
+            end
+        end
+
+        function flushdata(obj)
+            if isa(obj.vid,'videoinput')
+                flushdata(obj.vid)
+            end
+        end
+
+        function lastFrame=getLastFrame(obj)
+            if isa(obj.vid,'videoinput')
+                lastFrame=squeeze(peekdata(obj.vid,1));
+            end
+        end
+
+        function vidRunning=isrunning(obj)
+            if isa(obj.vid,'videoinput')
+                vidRunning=isrunning(obj.vid);
+            else
+                vidRunning = false;                
+            end
+        end
+
+        function nFrm=framesAcquired(obj)
+            if isa(obj.vid,'videoinput')
+                nFrm=obj.vid.FramesAcquired;
+            else
+                nFrm=0;
+            end
+        end
+
 
 
     end

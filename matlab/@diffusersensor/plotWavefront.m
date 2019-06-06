@@ -1,30 +1,44 @@
 function plotWavefront(obj)
-    % Plot the wavefront
+    % Plot the wavefront and Zernike coefs
+    %
+    % diffusersensor.plotWavefront
+    %
+    % Purpose
+    % This method plots the wavefront and Zernike coefs using 
+    % the current reference and test images stored in the 
+    % diffusersensor object
+    %
+    %
 
     if isempty(obj.phaseImage)
         return
     end
-    vidRunning=isrunning(obj.cam.vid);
+
+    vidRunning = obj.cam.isrunning;
     if vidRunning
-        obj.stopVideo
+        obj.cam.stopVideo
     end
 
 
     tFig=dws.focusNamedFig('resultsFigName');
-    plotGradients=false;
+    plotGradients=true;
 
+
+    % Optionally plot the gradient images
     if plotGradients
         subplot(2,2,1,'parent',tFig)
-        imagesc(obj.demons(:,:,1))
+        imagesc(obj.gradients(:,:,1))
         title('GradientX') 
         axis equal tight
 
         subplot(2,2,2,'parent',tFig)
-        imagesc(obj.demons(:,:,2))
+        imagesc(obj.gradients(:,:,2))
         title('GradientY')
         axis equal tight
     end
 
+
+    % Plot the phase image
     if plotGradients
         subplot(2,2,3,'parent',tFig)
     else
@@ -37,22 +51,23 @@ function plotWavefront(obj)
     axis equal tight
 
 
-    obj.calcZernike
+    % Plot the zernike coefs
     if plotGradients
-        subplot(2,2,3,'parent',tFig)
+        subplot(2,2,4,'parent',tFig)
     else
         subplot(2,1,2,'parent',tFig)
     end
-    subplot(2,2,4,'parent',tFig)
-    n=length(obj.zernNames);
-    barh(obj.zernCoefs)
-    set(gca,'YTick',1:n,'YTickLabel',obj.zernNames)
-    ylim([1.5,n+0.5])
-    grid on
+    if ~isempty(obj.zernNames)
+        n=length(obj.zernNames);
+        barh(obj.zernCoefs)
+        set(gca,'YTick',1:n,'YTickLabel',obj.zernNames)
+        ylim([1.5,n+0.5])
+        grid on
+    end
 
 
     if vidRunning
-        obj.startVideo
+        obj.cam.startVideo
     end
 
 end
