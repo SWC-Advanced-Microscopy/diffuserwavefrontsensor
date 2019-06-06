@@ -1,4 +1,4 @@
-function out = loadData(obj,fname)
+function varargout = loadData(obj,fname)
     % Load results previously saved by saveData
     %
     % out = diffusersensor.loadData(fname)
@@ -13,6 +13,10 @@ function out = loadData(obj,fname)
     %
     % Outputs
     % out - structure containing the loaded data
+    %
+    % Also see
+    % dws.loadData - loads data independently of the diffusersensor object
+
 
     if nargin<2
         fname='';
@@ -25,18 +29,22 @@ function out = loadData(obj,fname)
         return
     end
 
-    imageInfo = imfinfo(fname);
-    numFrames=length(imageInfo);
+    out = dws.loadData(fname);
 
-    %Extract the meta-data
-    out = dws.parseMetaData(imageInfo(1).ImageDescription);
+    % Import data
+    tFields = fields(out);
+    for ii=1:length(tFields)
+        if ~isprop(obj, tFields{ii})
+            continue
+        end
+        obj.(tFields{ii}) = out.(tFields{ii});
+    end
 
-    out = rmfield(out,'imageID');
+    obj.getPhase;
 
-    out.refImage = imread(fname,1);
-    out.testImage = imread(fname,2);
-    out.gradients = imread(fname,3);
-    out.gradients(:,:,2) = imread(fname,4);
-    out.phaseImage = imread(fname,5);
+    if nargout>0
+        varargout{1}=out;
+    end
+
 
 end
