@@ -31,6 +31,11 @@ classdef diffusersensor < handle
     % d.plotWavefront
     %
     %
+    % Run the analysis on a sub-region of the image
+    % d.addROI
+    % d.getPhase
+    % %% Right-click on ROI and delete to remove it
+    %
     % References
     % This project is based on the work of Berto, et al. 2017
     % https://www.osapublishing.org/ol/abstract.cfm?uri=ol-42-24-5117
@@ -59,6 +64,7 @@ classdef diffusersensor < handle
 
         fastCalc=true; % If true, we apply the following two scaling factors to speed up the calculation
         % Downscale the gradients by this factor (on top of raw image resize)
+        fastCalcMinImSize=1024; % If images are smaller than this number, don't do fastCalc
         gradientImDownscaleFactor = 0.25
         frameDownscaleFactor = 0.5  % Scaling factor for images before they are processed. 
                                      % This will speed up processing at the cost of larger pixel size
@@ -79,6 +85,8 @@ classdef diffusersensor < handle
         hImAx    % The handle of the image axes
         hImLive  % The handle of the streaming camera image in the image axes
         hTitle   % Title of live image
+
+        hRect    % Handle used to store an optional ROI
 
         % The following are tag names for reusing figure windows
         figTagName = 'wavSenseGUI'
@@ -135,7 +143,7 @@ classdef diffusersensor < handle
                 obj.hImAx=axes(obj.hFig);
                 rPos = obj.cam.vid.ROIPosition;
 
-                % We will want to acquire square images only otherwise zernike coefs can't be calculated
+                % We will acquire square images otherwise zernike coefs can't be calculated
                 m=min(rPos(3:4));
                 if rPos(3)==m
                     obj.colsToKeep=1:rPos(3);

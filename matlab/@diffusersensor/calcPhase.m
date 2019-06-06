@@ -25,7 +25,15 @@ function calcPhase(obj)
     refImage =obj.refImage;
 
 
-    if obj.fastCalc
+    if isa(obj.hRect,'imrect') && isvalid(obj.hRect)
+        pos = obj.hRect.getPosition;
+        imCols = round(pos(1):pos(3)+pos(1));
+        imRows = round(pos(2):pos(4)+pos(2));
+        testImage = testImage(imRows,imCols);
+        refImage  = refImage(imRows,imCols);
+    end
+
+    if obj.fastCalc && size(testImage,1)>obj.fastCalcMinImSize
         fprintf('Running quick and dirty phase calc\n')
         frameDownscaleFactor = obj.frameDownscaleFactor;
         gradientImDownscaleFactor = obj.gradientImDownscaleFactor;
