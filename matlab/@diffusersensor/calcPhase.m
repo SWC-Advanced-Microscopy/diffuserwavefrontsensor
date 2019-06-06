@@ -26,7 +26,7 @@ function calcPhase(obj)
 
 
 
-    if obj.frameDownscaleFactor<=1 && obj.frameDownscaleFactor>0.1
+    if obj.frameDownscaleFactor<=1 && obj.frameDownscaleFactor>0.01
         pixSize = pixSize / obj.frameDownscaleFactor; %Correct the pixel size
         testImage = imresize(testImage,obj.frameDownscaleFactor);
         refImage = imresize(refImage,obj.frameDownscaleFactor);
@@ -63,22 +63,25 @@ function calcPhase(obj)
     %----------  non-rigid image registration  ----------
     PL=3;
     if verbose
+        t=tic;
         fprintf('Running demon registration....')
     end
-    obj.gradients=imregdemons(testImage,refImage,10*ones(PL,1),'AccumulatedFieldSmoothing',3,'PyramidLevels',PL,'DisplayWaitbar',false);
+    obj.gradients=imregdemons(testImage,refImage,10*ones(PL,1), ...
+        'AccumulatedFieldSmoothing',3,'PyramidLevels',PL,'DisplayWaitbar',false);
     % obj.gradients is the displacement field along rows and columns used to align the fixed to the moving image
     if verbose
-        fprintf('done\n')
+        fprintf('done: %0.1f s\n',toc(t))
     end
 
     % We can resize the gradient images further, as they should be smooth
-    if obj.gradientImDownscaleFactor<1 && obj.gradientImDownscaleFactor>0.1
+    if obj.gradientImDownscaleFactor<1 && obj.gradientImDownscaleFactor>0.01
         pixSize = pixSize / obj.gradientImDownscaleFactor;
         obj.gradients = imresize(obj.gradients,obj.gradientImDownscaleFactor);
     end
 
     %----------   symetrization for gradient integration   ----------
     if verbose
+        t=tic;
         fprintf('Fourier integration...')
     end
 
@@ -102,10 +105,10 @@ function calcPhase(obj)
     prov=real( dws.IFFT( -1i*Ks.*dws.FFT(D2(:,:,1)+1i*D2(:,:,2)) ) );
 
     if verbose
-        fprintf('done\n')
+        fprintf('done: %0.1f s\n',toc(t))
     end
     % ----------   phase scaling factor   ----------
-    SF=2*pi*pixSize^2/(lambda*camDistance); %scaling factor
+    SF=obj.gradientImDownscaleFactor*2*pi*pixSize^2/(lambda*camDistance); %scaling factor
     obj.phaseImage=SF*prov([1:M],[1:N]);
 
 
@@ -120,8 +123,8 @@ function calcPhase(obj)
         obj.zernCoefs=[];
         obj.zernNames=[];
     end
-    
-    obj.lastPhaseImTime = now; %Update the time at which the phase image was last calculated        
+
+    obj.lastPhaseImTime = now; %Update the time at which the phase image was last calculated
 
     if vidRunning
         obj.cam.startVideo
