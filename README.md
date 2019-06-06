@@ -54,10 +54,18 @@ A sample session would go like this:
 d=diffusersensor
 ```
 
-* Assuming you have the default compatible camera, a window will now appear with a live stream from the camera sensor. 
-If nothing happens, you will need to create a camera function file for your device. 
-Go to the `private` directory of the `dws.camera` class and make a new function based on the existing ones. 
-The string `camToStart` should now be assigned to the name of your camera.  
+* Assuming if you have a compatible camera with a single acquisition mode, a window will now appear with a live stream from the camera sensor. 
+If you have multiple cameras or multiple acquisition modes you will see someting like the following at the command line, prompting you to choose an acquisitoin scenario.
+```
+>> d=diffusersensor;
+No devices were detected for the 'winvideo' adaptor. For troubleshooting device detection issues, click here.
+1  -  videoinput('gentl', 1, 'Mono12')
+2  -  videoinput('gentl', 1, 'Mono8')
+
+Enter device number and press return: 2
+>> 
+```
+
 
 * Set up your optical system to acquire a reference image then: 
 ```
