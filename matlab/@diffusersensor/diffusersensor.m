@@ -56,16 +56,19 @@ classdef diffusersensor < handle
         refImage   % An optional previously loaded reference image 
         testImage  % Last acquired frame
 
-        gradientImDownscaleFactor = 0.5 % Downscale the gradients by this factor (on top of raw image resize)
 
-        frameDownscaleFactor = 1  % Scaling factor for images before they are processed. 
-                                  % This will speed up processing at the cost of larger pixel size
+        fastCalc=true; % If true, we apply the following two scaling factors to speed up the calculation
+        % Downscale the gradients by this factor (on top of raw image resize)
+        gradientImDownscaleFactor = 0.25
+        frameDownscaleFactor = 0.5  % Scaling factor for images before they are processed. 
+                                     % This will speed up processing at the cost of larger pixel size
         transCor=false %If true, perform a translation correction of last image to reference
                       %before calculating the wavefront 
 
         doFitZernike = true % If true we fit Zernike polynomials to the phase plot
         nZernPoly = 13   % Number of Zernike polynomials to return
-        zernImSize = 512 %Use a square phase image of this size to calculate the zernike coefs. 
+
+        zernImSize = 256 %Use a square phase image of this size to calculate the zernike coefs. 
                          %zernImSize can be quite small compared to the original image as the 
                          %phase plot should be smooth
         printZernCoefs = false % If true the zernike coefs are printed to screen when calculated
@@ -197,7 +200,7 @@ classdef diffusersensor < handle
             if isempty(obj.refImage)
                 obj.hImLive.CData = repmat(obj.testImage,[1,1,3]);
             else
-                tmpIm=repmat(obj.testImage,[1,1,3]);;
+                tmpIm=repmat(obj.testImage,[1,1,3]);
                 tmpIm(:,:,1)=obj.refImage;
                 tmpIm(:,:,3)=0;
                 obj.hImLive.CData = tmpIm;

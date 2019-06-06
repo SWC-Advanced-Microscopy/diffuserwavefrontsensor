@@ -25,6 +25,24 @@ function calcPhase(obj)
     refImage =obj.refImage;
 
 
+    if obj.fastCalc
+        fprintf('Running quick and dirty phase calc\n')
+        frameDownscaleFactor = obj.frameDownscaleFactor;
+        gradientImDownscaleFactor = obj.gradientImDownscaleFactor;
+    else
+        frameDownscaleFactor=1;
+        gradientImDownscaleFactor=1;
+    end
+
+    if frameDownscaleFactor>1 || frameDownscaleFactor<0.01
+        fprintf('frameDownscaleFactor out of range. Setting it to 1\n')
+        frameDownscaleFactor=1;
+    end
+    if gradientImDownscaleFactor>1 || gradientImDownscaleFactor<0.01
+        fprintf('gradientImDownscaleFactor out of range. Setting it to 1\n')
+        gradientImDownscaleFactor=1;
+    end
+
 
     if obj.frameDownscaleFactor<=1 && obj.frameDownscaleFactor>0.01
         pixSize = pixSize / obj.frameDownscaleFactor; %Correct the pixel size

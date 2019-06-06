@@ -89,7 +89,7 @@ classdef camera < handle
             triggerconfig(obj.vid,'manual')
             vid.TriggerRepeat=inf;
             obj.vid.FramesPerTrigger = inf;
-            obj.vid.FramesAcquiredFcnCount=5; %Run frame acq fun every frame
+            obj.vid.FramesAcquiredFcnCount=10; %Run frame acq fun every frame
 
         end % close constructor
 
