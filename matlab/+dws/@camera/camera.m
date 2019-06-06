@@ -24,9 +24,9 @@ classdef camera < handle
             end
 
             if strcmpi(camToStart,'demo')
+
                 fprintf('dws.camera is starting with a dummy camera\n')
-                obj.vid.ROIPosition=[0,0,2048,2048]; % Make up a sensor size
-                % No camera is started
+                obj.demoMode
                 return
             end
 
@@ -34,7 +34,6 @@ classdef camera < handle
             cams=imaqhwinfo;
             if isempty(cams.InstalledAdaptors)
                 fprintf('NO CAMERAS FOUND by dws.camera\n');
-                delete(obj)
                 return
             end
 
@@ -53,7 +52,8 @@ classdef camera < handle
                 end
 
             end
-            
+
+            constructorCommand=[];
             if length(constructorCommands)==1
                 constructorCommand = constructorCommands{1};
             elseif length(constructorCommands)>1 && isempty(camToStart)
@@ -67,7 +67,7 @@ classdef camera < handle
                     IN = str2num(IN);
                 end
                 constructorCommand = constructorCommands{IN};
-                
+
             elseif length(constructorCommands)>1 && length(camToStart)==1
                 fprintf('Available interfaces:\n')
                 for ii=1:length(constructorCommands)
@@ -81,15 +81,19 @@ classdef camera < handle
 
 
             %Runs one of the camera functions in the camera private sub-directory
-            obj.vid = eval(constructorCommand);
-            obj.src = getselectedsource(obj.vid);
+            if ~isempty(constructorCommand)
+                obj.vid = eval(constructorCommand);
+                obj.src = getselectedsource(obj.vid);
 
-            % Set up the camera so that it is manually triggerable an 
-            % unlimited number of times. 
-            triggerconfig(obj.vid,'manual')
-            vid.TriggerRepeat=inf;
-            obj.vid.FramesPerTrigger = inf;
-            obj.vid.FramesAcquiredFcnCount=10; %Run frame acq fun every frame
+                % Set up the camera so that it is manually triggerable an 
+                % unlimited number of times. 
+                triggerconfig(obj.vid,'manual')
+                vid.TriggerRepeat=inf;
+                obj.vid.FramesPerTrigger = inf;
+                obj.vid.FramesAcquiredFcnCount=10; %Run frame acq fun every frame
+            else
+                obj.demoMode
+            end
 
         end % close constructor
 
@@ -142,6 +146,12 @@ classdef camera < handle
             else
                 nFrm=0;
             end
+        end
+
+        function demoMode(obj)
+            % Set up a few hard-coded properties so that diffusersensor runs
+            % with no camera
+            obj.vid.ROIPosition=[0,0,2048,2048]; % Make up a sensor size
         end
 
 
