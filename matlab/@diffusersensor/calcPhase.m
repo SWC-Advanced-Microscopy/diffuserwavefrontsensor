@@ -60,8 +60,10 @@ function calcPhase(obj)
 
     if obj.transCor
         if verbose
+            t=tic;
             fprintf('Doing translation correction...')
         end
+        origImageSize = size(testImage);
         [testImage,shiftBy]=dws.apply_ffttrans(testImage,refImage);
         cropBy = ceil(max(abs(shiftBy)));
         if cropBy>1
@@ -72,11 +74,14 @@ function calcPhase(obj)
             tmp(:,:,2) = testImage; %which has been registered
             tmp(:,:,3) = 0;
             obj.hImLive.CData = tmp;
-            obj.hTitle.String = 'OVERLAY OF REGISTERED IMAGE';
+
+            %How much overlap is there between the registered and original images?
+            overlap=round((prod(size(testImage))/prod(origImageSize))*100);
+            obj.hTitle.String = sprintf('OVERLAY OF REGISTERED IMAGE: %d%% overlap',overlap);
             drawnow
         end
         if verbose
-            fprintf('done\n')
+            fprintf('done: %0.1f s\n',toc(t))
         end
     else
         obj.updateLiveImage
