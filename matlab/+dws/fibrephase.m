@@ -71,6 +71,7 @@ function varargout=fibrephase(fDist,pupilSize,lambda)
 
     % Turn Z, which is the wavefront curvature, into a phase delay
     Z=bsxfun(@minus, Z, max(max(Z)) ); %To remove piston
+    Zm=Z*1E3;  % This is useful to export
     Z=Z*1E9;    % From meters to nanometers
     Z=(Z/lambda)*2*pi; % Convert to radians
 
@@ -79,6 +80,7 @@ function varargout=fibrephase(fDist,pupilSize,lambda)
         out.sensorPosX = X;
         out.sensorPosY = Y;
         out.phaseDelay = Z;
+        out.curvatureInmm = Zm;
         out.lambda = lambda;
         out.pupilSize = pupilSize;
         out.fDist = fDist;

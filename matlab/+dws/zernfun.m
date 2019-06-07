@@ -50,7 +50,7 @@ function z = zernfun(n,m,r,theta,nflag)
 %       [theta,r] = cart2pol(X,Y);
 %       idx = r<=1;
 %       z = nan(size(X));
-%       z(idx) = zernfun(5,1,r(idx),theta(idx));
+%       z(idx) = dws.zernfun(5,1,r(idx),theta(idx));
 %       figure
 %       pcolor(x,x,z), shading interp
 %       axis square, colorbar
@@ -67,7 +67,7 @@ function z = zernfun(n,m,r,theta,nflag)
 %       n = [0  1  1  2  2  2  3  3  3  3];
 %       m = [0 -1  1 -2  0  2 -3 -1  1  3];
 %       Nplot = [4 10 12 16 18 20 22 24 26 28];
-%       y = zernfun(n,m,r(idx),theta(idx));
+%       y = dws.zernfun(n,m,r(idx),theta(idx));
 %       figure('Units','normalized')
 %       for k = 1:10
 %           z(idx) = y(:,k);
