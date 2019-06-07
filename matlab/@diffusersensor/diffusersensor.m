@@ -78,6 +78,13 @@ classdef diffusersensor < handle
                          %zernImSize can be quite small compared to the original image as the 
                          %phase plot should be smooth
         printZernCoefs = false % If true the zernike coefs are printed to screen when calculated
+
+        % Properties that contain results. These may be returned using the method
+        % diffusersensor.returnResults and saved with diffusersensor.saveData
+        phaseImage % The wavefront image will be stored here
+        zernNames  % Names of the Zernike coefs
+        zernCoefs  % Zernike coefs
+        gradients  % The first output of the demon registration: the deformations in x and y
     end
 
     properties (Hidden)
@@ -96,13 +103,6 @@ classdef diffusersensor < handle
         % for the purpose of returning square images
         rowsToKeep
         colsToKeep
-
-        % Properties that contain results. These may be returned using the method
-        % diffusersensor.returnResults and saved with diffusersensor.saveData
-        phaseImage % The wavefront image will be stored here
-        zernNames  % Names of the Zernike coefs
-        zernCoefs  % Zernike coefs
-        gradients  % The first output of the demon registration: the deformations in x and y
 
         lastPhaseImTime % The time at which the phase image was last calculated
     end

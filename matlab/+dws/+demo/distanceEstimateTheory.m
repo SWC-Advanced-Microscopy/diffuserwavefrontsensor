@@ -12,7 +12,7 @@ function distanceEstimateTheory
 
     sensorSizeInMM = 10;
 
-    sourceDistancesInMM = [500,400,370,366,363,361,360.5,360.25,360];
+    sourceDistancesInMM = [500,400,380,376,374,373,372,371,370.5,370];
 
     out = dws.fibrephase(sourceDistancesInMM*1E-3, sensorSizeInMM);
 
@@ -49,12 +49,14 @@ function distanceEstimateTheory
     %Now we determine the difference in radius
     % Report the curvatures
 
+    fprintf('\n')
     for ii=1:size(out.phaseDelay,3)-1
         spdEND = spd(:,:,end);
         spdEND(:,3) = spdEND(:,3)-spd(:,3,ii);
         [~,dr(ii)] = dws.sphereFit(spdEND); %difference in radius
-        disp(dr(ii))
+        fprintf('actual r=%0.2f delta r=%0.2e\n', sourceDistancesInMM(ii),dr(ii) );
     end
+    fprintf('\n')
 
 
     % Determine the original radius by:
@@ -66,8 +68,9 @@ function distanceEstimateTheory
         simuWaveFront = spd(:,:,end);
         simuWaveFront(:,3) = simuWaveFront(:,3)-tWaveFront.curvatureInmm(:);
         [~,est(ii)] = dws.sphereFit(simuWaveFront); %difference in radius
+        fprintf('actual r=%0.2f estimated r=%0.2f\n', sourceDistancesInMM(ii),est(ii) );
     end
-    est
+    fprintf('\n')
 
     subplot(1,3,2)
     plot(sourceDistancesInMM(1:length(est)),est,'ob','markerfacecolor',[0.5,0.5,1])
