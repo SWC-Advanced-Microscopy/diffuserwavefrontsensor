@@ -66,7 +66,13 @@ Enter device number and press return: 2
 >> 
 ```
 
-
+* Change the gain on the camera if the image is saturated or too dim.
+These commands may be device specific. 
+On Basler cameras, for instance, do:
+```
+ >> d.cam.src.ExposureTime=200;
+```
+ 
 * Set up your optical system to acquire a reference image then: 
 ```
 d.setReference
