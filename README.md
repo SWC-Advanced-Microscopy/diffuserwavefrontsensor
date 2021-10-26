@@ -8,7 +8,7 @@ The array segments the pupil so the position of the focal spot under each lensle
 The Shack–Hartmann sensor can not measure discontinuous phase steps. 
 
 An alternative solution working along similar principles was presented by [Berto, et al. 2017](https://www.osapublishing.org/ol/abstract.cfm?uri=ol-42-24-5117).
-These authors place a thin holographic diffuser a known distance in front of a camera sensor. 
+These authors place a thin holographic diffuser at a known distance in front of a camera sensor. 
 Coherent light striking the diffuser projects a pattern onto the sensor. 
 It is intuitive that altering the incident angle of the incoming light will translate the pattern across the sensor. 
 Therefore local tilts in wavefront will distort the pattern. 
